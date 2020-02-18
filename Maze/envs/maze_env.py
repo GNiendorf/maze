@@ -1,8 +1,9 @@
 import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
+from .maze import display_maze, generate_maze
 
-class FooEnv(gym.Env):
+class MazeEnv(gym.Env):
   metadata = {'render.modes': ['human']}
 
   def __init__(self):
