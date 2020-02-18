@@ -1,5 +1,4 @@
 import numpy as np
-import random
 
 N, S, E, W = 1, 2, 4, 8
 DX = { E : 1, W : -1, N :  0, S : 0 }
@@ -46,8 +45,7 @@ def display_maze(grid):
     padded_pic = np.pad(maze, ((pad,pad),(pad,pad), (0,0)), mode='edge')
     return padded_pic
 
-def generate_maze(size=5, seed=10):
-    random.seed(seed)
+def generate_maze(size):
     width=int((size+1)/2)
     height=int((size+1)/2)
     grid = [[0 for y in range(width)] for x in range(height)]
@@ -57,7 +55,7 @@ def generate_maze(size=5, seed=10):
         for x in range(width):
             if y>0: edges.append([x, y, N])
             if x>0: edges.append([x, y, W])
-    random.shuffle(edges)
+    np.random.shuffle(edges)
     while len(edges) > 0:
         x, y, direction = edges.pop()
         nx, ny = x + DX[direction], y + DY[direction]
