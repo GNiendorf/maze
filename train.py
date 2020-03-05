@@ -4,16 +4,11 @@ import os
 import gym
 import numpy as np
 import tensorflow as tf
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
 from baselines import logger
 from baselines.ppo2 import ppo2
 from baselines.common.models import build_impala_cnn
 from baselines.common.vec_env import (
-    VecExtractDictObs,
     VecMonitor,
-    VecFrameStack,
-    VecNormalize,
     DummyVecEnv,
 )
 
@@ -39,14 +34,14 @@ logger.configure(dir=LOG_DIR, format_strs=format_strs)
 
 logger.info("creating environment")
 def env_fn():
-    return gym.make('maze-v0')
+    return gym.make('maze-v0', start_level=0, num_levels=50)
 envs = [env_fn for x in range(64)]
 venv = DummyVecEnv(envs)
 
 def eval_env_fn():
-    return gym.make('maze-v0', num_levels=0)
-envs = [eval_env_fn for x in range(64)]
-eval_venv = DummyVecEnv(envs)
+    return gym.make('maze-v0', start_level=0, num_levels=0)
+eval_envs = [eval_env_fn for x in range(64)]
+eval_venv = DummyVecEnv(eval_envs)
 
 venv = VecMonitor(
     venv=venv, filename=None, keep_buf=100,
