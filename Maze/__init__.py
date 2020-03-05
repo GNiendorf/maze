@@ -1,6 +1,6 @@
 from gym.envs.registration import register
 
 register(
-    id='Maze',
+    id='maze-v0',
     entry_point='Maze.envs:MazeEnv',
 )
