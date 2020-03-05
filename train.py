@@ -26,7 +26,7 @@ os.environ["CUDA_VISIBLE_DEVICES"]="-1"
 learning_rate = 5e-4
 ent_coef = .01
 gamma = .999
-total_time = int(1e7)
+total_time = int(2e6)
 lam = .95
 nsteps = 256
 nminibatches = 8
@@ -43,8 +43,17 @@ def env_fn():
 envs = [env_fn for x in range(64)]
 venv = DummyVecEnv(envs)
 
+def eval_env_fn():
+    return gym.make('maze-v0', num_levels=0)
+envs = [eval_env_fn for x in range(64)]
+eval_venv = DummyVecEnv(envs)
+
 venv = VecMonitor(
     venv=venv, filename=None, keep_buf=100,
+)
+
+eval_venv = VecMonitor(
+    venv=eval_venv, filename=None, keep_buf=100,
 )
 
 logger.info("creating tf session")
@@ -57,6 +66,7 @@ conv_fn = lambda x: build_impala_cnn(x, depths=[16,32,32], emb_size=256)
 logger.info("training")
 final_model = ppo2.learn(
     env=venv,
+    eval_env=eval_venv,
     network=conv_fn,
     total_timesteps=total_time,
     save_interval=0,
