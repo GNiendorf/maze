@@ -3,17 +3,18 @@ import random
 import numpy as np
 from gym.utils import seeding
 from gym import error, spaces, utils
-from maze import generate_maze
+from .maze import generate_maze
 
 N, S, E, W = 1, 2, 4, 8
 
 class MazeEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, start_level=0, num_levels=100, size=5):
+    def __init__(self, start_level=0, num_levels=100, size=5, horizon=200):
+        self.size = size
+        self.horizon = horizon
         self.start_level = start_level
         self.num_levels = num_levels if num_levels > 0 else 1e9
-        self.size = 5
         self.num_envs = 1
         self.step_dir = [[-1,0],[1,0],[0,1],[0,-1]]
         self.l = 0
@@ -21,7 +22,7 @@ class MazeEnv(gym.Env):
         self.R = 0
 
         self.action_space = spaces.Discrete(4)
-        self.observation_space = spaces.Box(low=0, high=255, shape=(self.size, self.size, 3), dtype=np.uint8)
+        self.observation_space = spaces.Box(low=0, high=255, shape=(self.size+2, self.size+2, 3), dtype=np.uint8)
 
     def display_maze(self, agent=None, goal=None):
         low = np.ones((2,1,3), dtype=np.uint8)*255
@@ -62,19 +63,28 @@ class MazeEnv(gym.Env):
         self.l += 1
         reward = 0
         done = False
+        old_agent = np.copy(self.agent)
+        #Check if action is valid (not into a wall)
         if np.any([np.array_equal(self.agent+self.step_dir[action], x) for x in self.xy]):
             self.agent += self.step_dir[action]
-        if np.array_equal(self.agent, self.goal):
-            reward = 1
-            self.R += 1
+        #Check if agent is at goal state or horizon
+        goal_check = np.array_equal(self.agent, self.goal)
+        horizon_check = self.l >= self.horizon
+        if goal_check or horizon_check:
+            if goal_check:
+                reward = 10
+                self.R += 10
             done = True
-        self.maze, self.play = self.display_maze(agent=self.agent, goal=self.goal)
-        info = {'episode': {'episode': self.ep, 'r': self.R, 'l':self.l}}
+            self.reset()
+        else:
+            #Update frame
+            self.maze[old_agent[0], old_agent[1]] = [255, 255, 255]
+            self.maze[self.agent[0], self.agent[1]] = [0, 0, 255]
+        info = {'seed':self.seed_num, 'episode_complete':done}
         if done:
             self.R = 0
             self.l = 0
             self.ep += 1
-            self.reset()
         return self.maze, reward, done, info
 
     def step_async(self, actions):
