@@ -1,2 +1,5 @@
 # Maze
-Simplified maze environment from the Procgen environments. Can be used to quickly prototype ideas for improved generalization. Maze is currently under development.
+
+Inspired by: https://arxiv.org/abs/1907.01475
+
+Simple maze environment for DRL generalization studies.
