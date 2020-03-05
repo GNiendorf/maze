@@ -3,6 +3,7 @@
 Inspired by: https://arxiv.org/abs/1907.01475
 
 ![Alt Text](./maze_train_folder/maze.gif)
+![Alt Text](./maze_train_folder/overfit.png)
 
 Simple maze environment for DRL generalization studies.
 
