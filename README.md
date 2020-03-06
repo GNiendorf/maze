@@ -4,8 +4,8 @@ Inspired by: https://arxiv.org/abs/1907.01475
 
 Simple maze environment for DRL generalization studies.
 
+![Alt Text](./grid_example.png)
 ![Alt Text](./maze_performance.png)
-![Alt Text](./maze_train_folder/overfit.png)
 
 ## Installation
 
